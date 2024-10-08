@@ -2,7 +2,6 @@
 
 Sure! Here’s a Markdown tutorial for the Docker setup and usage you described.
 
-```markdown
 # Docker Setup and Usage Tutorial
 
 This tutorial will guide you through the process of building a Docker container, entering it, running a specific script, and stopping the container.
