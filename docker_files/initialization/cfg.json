@@ -1,0 +1,14 @@
+{
+  "network": {
+    "blender": "localhost",
+    "blender-port": 8080,
+    "asr_translation": "localhost",
+    "asr_translation-port": 8081,
+    "robot_ip": "10.0.1.8"
+  },
+  "asr": "google",
+  "asr_language": "fr-FR",
+  "translation": "deepl",
+  "language_output": "FR",
+  "woz": false
+}

@@ -1,0 +1,65 @@
+#! /usr/bin/env python
+# -*- encoding: UTF-8 -*-
+
+"""Example: PoseInit - Small example to make Nao go to an initial position."""
+
+import qi
+import argparse
+import sys
+import time
+
+
+def main(session):
+    """
+    PoseInit: Small example to make Nao go to an initial position.
+    """
+    # Get the services ALMotion & ALRobotPosture.
+
+    motion_service = session.service("ALMotion")
+    posture_service = session.service("ALRobotPosture")
+    # Example showing how to activate "Move", "LArm" and "RArm" external anti collision
+    name = "Arms"
+    enable = False
+    motion_service.setExternalCollisionProtectionEnabled(name, enable)
+    # Wake up robot
+    motion_service.wakeUp()
+    posture_service.goToPosture("StandInit", 0.5)
+    time.sleep(0.5)
+    motion_service.setAngles("HeadPitch", -0.45, 0.1)
+    time.sleep(0.1)
+    motion_service.setAngles("HeadYaw", 0., 0.1)
+    time.sleep(0.1)
+    # We use the "Body" name to signify the collection of all joints
+    names = "Body"
+    stiffnessLists = 1.0
+    timeLists = 1.0
+    motion_service.stiffnessInterpolation(names, stiffnessLists, timeLists)
+
+    # Send robot to Stand Init
+    # posture_service.goToPosture("StandInit", 0.5)
+    start = time.time()
+    while abs(time.time() - start) < 500:
+        motion_service.setAngles("HeadPitch", -0.45, 0.1)
+        time.sleep(0.1)
+        motion_service.setAngles("HeadYaw", 0., 0.1)
+        time.sleep(3)
+    # Go to rest position
+    # motion_service.rest()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", type=str, default="169.254.15.172",
+                        help="Robot IP address. On robot or Local Naoqi: use '127.0.0.1'.")
+    parser.add_argument("--port", type=int, default=9559,
+                        help="Naoqi port number")
+
+    args = parser.parse_args()
+    session = qi.Session()
+    try:
+        session.connect("tcp://" + args.ip + ":" + str(args.port))
+    except RuntimeError:
+        print("Can't connect to Naoqi at ip \"" + args.ip + "\" on port " + str(args.port) + ".\n"
+                                                                                             "Please check your script arguments. Run with -h option for help.")
+        sys.exit(1)
+    main(session)

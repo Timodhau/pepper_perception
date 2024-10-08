@@ -1,0 +1,50 @@
+<launch>
+
+  <arg name="nao_ip"              default="10.0.1.4" />
+  <arg name="nao_port"            default="$(optenv NAO_PORT 9559)" />
+
+  <arg name="roscore_ip"          default="127.0.0.1" />
+  <arg name="network_interface"   default="wlo1" />
+
+  <arg name="namespace"           default="$(optenv ROS_NAMESPACE pepper_robot)" />
+
+  <param name="/nao_ip" type="str" value="$(arg nao_ip)" />
+  <param name="/nao_port" type="int" value="$(arg nao_port)" />
+
+  <!-- naoqi driver -->
+  <include file="$(find naoqi_driver)/launch/naoqi_driver.launch">
+    <arg name="nao_ip"            value="$(arg nao_ip)" />
+    <arg name="nao_port"          value="$(arg nao_port)" />
+    <arg name="roscore_ip"        value="$(arg roscore_ip)" />
+    <arg name="network_interface" value="$(arg network_interface)" />
+    <arg name="namespace"         value="$(arg namespace)" />
+  </include>
+
+  <!-- launch pose manager
+  <include file="$(find naoqi_pose)/launch/pose_manager.launch" ns="$(arg namespace)/pose" >
+    <arg name="nao_ip"            value="$(arg nao_ip)" />
+    <arg name="nao_port"          value="$(arg nao_port)" />
+  </include> -->
+
+  <!-- launch perception -->
+  <include file="$(find pepper_bringup)/launch/perception.launch.xml">
+    <arg name="namespace"         value="$(arg namespace)" />
+  </include>
+
+  <!-- lasers
+  <include file="$(find pepper_sensors_py)/launch/laser.launch"  >
+    <arg name="nao_ip"            value="$(arg nao_ip)" />
+    <arg name="nao_port"          value="$(arg nao_port)" />
+  </include>-->
+
+  <!-- Sound Localization -->
+  <include file="$(find nao_interaction_launchers)/launch/nao_audio_interface.launch"  >
+    <arg name="nao_ip"            value="$(arg nao_ip)" />
+    <arg name="nao_port"          value="$(arg nao_port)" />
+  </include>
+
+  <node name="plugins_pepper" pkg="pepper_perception" type="plugins_pepper_ros.py" respawn="true" output="screen" />
+
+  <!-- laser fusion for slam with lasers -->
+  <node if="false" name="laser_fusion" pkg="pepper_perception" type="laser_publisher.py" respawn="true" output="log" />
+</launch>
